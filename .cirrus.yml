@@ -24,6 +24,8 @@ linux_task:
     - go build -race -v ./...
   test_script:
     - go test -race -v ./...
+  benchmark_script:
+    - go test -run=XXX -bench=. .
 
 osx_task:
   osx_instance:
@@ -49,6 +51,8 @@ osx_task:
     - go build -race -v ./...
   test_script:
     - go test -race -v ./...
+  benchmark_script:
+    - go test -run=XXX -bench=. .
 
 windows_task:
   windows_container:
@@ -64,6 +68,8 @@ windows_task:
     - go build -race -v ./...
   test_script:
     - go test -race -v ./...
+  benchmark_script:
+    - go test -run=XXX -bench=. .
 
 freebsd_task:
   freebsd_instance:
@@ -89,3 +95,5 @@ freebsd_task:
     - go build -race -v ./...
   test_script:
     - go test -race -v ./...
+  benchmark_script:
+    - go test -run=XXX -bench=. .
