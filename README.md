@@ -1,6 +1,7 @@
 fastrand
 --------
 
+[![Cirrus CI](https://api.cirrus-ci.com/github/awnumar/fastrand.svg)](https://cirrus-ci.com/github/awnumar/fastrand)
 [![GoDoc](https://godoc.org/github.com/awnumar/fastrand?status.svg)](https://godoc.org/github.com/awnumar/fastrand)
 [![Go Report Card](http://goreportcard.com/badge/github.com/awnumar/fastrand)](https://goreportcard.com/report/github.com/awnumar/fastrand)
 
