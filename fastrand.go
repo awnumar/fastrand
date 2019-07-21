@@ -36,15 +36,13 @@ type randReader struct {
 // random generator. It uses blake2b as its hashing function. Reader is safe
 // for concurrent use by multiple goroutines.
 var Reader *randReader
-
-// Seed holds the global seed value for the CSPRNG.
-var Seed *memguard.LockedBuffer
+var entropy *memguard.LockedBuffer
 
 // init provides the initial entropy for the reader that will seed all numbers
 // coming out of fastrand.
 func init() {
 	r := &randReader{}
-	Seed = memguard.NewBufferRandom(32)
+	entropy = memguard.NewBufferRandom(32)
 	Reader = r
 }
 
@@ -87,7 +85,7 @@ func (r *randReader) Read(b []byte) (int, error) {
 	binary.LittleEndian.PutUint64(seed[0:8], counter)
 	binary.LittleEndian.PutUint64(seed[8:16], counterExtra)
 	// Leave 16 bytes for the inner counter.
-	copy(seed[32:], Seed.Bytes())
+	copy(seed[32:], entropy.Bytes())
 
 	// Set up an inner counter, that can be incremented to produce unique
 	// entropy within this thread.
