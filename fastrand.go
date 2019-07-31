@@ -41,9 +41,8 @@ var entropy *memguard.LockedBuffer
 // init provides the initial entropy for the reader that will seed all numbers
 // coming out of fastrand.
 func init() {
-	r := &randReader{}
 	entropy = memguard.NewBufferRandom(32)
-	Reader = r
+	Reader = &randReader{}
 }
 
 // Read fills b with random data. It always returns len(b), nil.
