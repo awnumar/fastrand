@@ -12,15 +12,13 @@ go get github.com/awnumar/fastrand
 `fastrand` implements a cryptographically secure pseudorandom number generator.
 The generator is seeded using the system's default entropy source, and
 thereafter produces random values via repeated hashing. As a result, `fastrand`
-can generate randomness much faster than `crypto/rand`, and generation cannot
-fail beyond a potential panic during `init()`.
+can generate randomness much faster than `crypto/rand`.
 
 `fastrand` was forked from `gitlab.com/NebulousLabs/fastrand`. This version of the package
-uses securely allocated memory provided by `github.com/awnumar/memguard`.
+uses securely allocated memory.
 
 `fastrand` also scales better than `crypto/rand` and `math/rand` when called in
 parallel. In fact, `fastrand` can even outperform `math/rand` when using enough threads.
-
 
 ## Benchmarks ##
 

@@ -19,8 +19,6 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/awnumar/memguard"
-
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -30,19 +28,22 @@ import (
 type randReader struct {
 	counter      uint64 // First 64 bits of the counter.
 	counterExtra uint64 // Second 64 bits of the counter.
+	entropy      []byte // Seed value in securely allocated memory.
 }
 
 // Reader is a global, shared instance of a cryptographically strong pseudo-
 // random generator. It uses blake2b as its hashing function. Reader is safe
 // for concurrent use by multiple goroutines.
 var Reader *randReader
-var entropy *memguard.LockedBuffer
 
 // init provides the initial entropy for the reader that will seed all numbers
 // coming out of fastrand.
 func init() {
-	entropy = memguard.NewBufferRandom(32)
-	Reader = &randReader{}
+	r := &randReader{entropy: bp.get()}
+	if _, err := rand.Read(r.entropy); err != nil {
+		panic(err)
+	}
+	Reader = r
 }
 
 // Read fills b with random data. It always returns len(b), nil.
@@ -77,14 +78,16 @@ func (r *randReader) Read(b []byte) (int, error) {
 		atomic.AddUint64(&r.counterExtra, 1)
 	}
 
-	// Copy the counter and entropy into a separate slice, so that the result
+	// Get a securely allocated buffer from the buffer pool.
+	seed := bp.get()
+	defer bp.put(seed)
+	// Copy the counter and entropy into a it, so that the result
 	// may be used in isolation of the other threads. The counter ensures that
 	// the result is unique to this thread.
-	seed := make([]byte, 64) // TODO: implement guarded local buffers too
 	binary.LittleEndian.PutUint64(seed[0:8], counter)
 	binary.LittleEndian.PutUint64(seed[8:16], counterExtra)
 	// Leave 16 bytes for the inner counter.
-	copy(seed[32:], entropy.Bytes())
+	copy(seed[32:], r.entropy)
 
 	// Set up an inner counter, that can be incremented to produce unique
 	// entropy within this thread.
@@ -97,8 +100,8 @@ func (r *randReader) Read(b []byte) (int, error) {
 		binary.LittleEndian.PutUint64(seed[24:32], innerCounterExtra)
 
 		// Hash the seed to produce the next set of entropy.
-		result := blake2b.Sum512(seed)
-		n += copy(b[n:], result[:])
+		result := blake2b.Sum512(seed) // (! potential leak here !)
+		n += copy(b[n:], result[:])    // need alternative blake2 impl.
 
 		// Increment the inner counter. Because we are the only thread accessing
 		// the counter, we can wait until the first 64 bits have reached their
