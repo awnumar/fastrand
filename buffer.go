@@ -6,7 +6,7 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/awnumar/memguard/memcall"
+	"github.com/awnumar/memcall"
 )
 
 var pageSize = os.Getpagesize()
