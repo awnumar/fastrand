@@ -2,6 +2,7 @@ linux_task:
   container:
     image: golang:latest
   env:
+    GO111MODULE: on
     GOPROXY: https://proxy.golang.org
     GOPATH: /tmp/go
     CIRRUS_WORKING_DIR: /tmp/go/src/github.com/${CIRRUS_REPO_FULL_NAME}
@@ -18,6 +19,7 @@ osx_task:
   osx_instance:
     image: mojave-base
   env:
+    GO111MODULE: on
     GOPROXY: https://proxy.golang.org
     GOPATH: /tmp/go
     PATH: ${GOPATH}/bin:${PATH}
@@ -38,6 +40,7 @@ windows_task:
     image: golang:windowsservercore-1803
     os_version: 1803
   env:
+    GO111MODULE: on
     GOPROXY: https://proxy.golang.org
     GOPATH: C:\go
     PATH: ${GOPATH}\bin:${PATH}
@@ -55,6 +58,7 @@ freebsd_task:
   freebsd_instance:
     image: freebsd-12-0-release-amd64
   env:
+    GO111MODULE: on
     GOPROXY: https://proxy.golang.org
     GOPATH: /tmp/go
     PATH: ${GOPATH}/bin:${PATH}
